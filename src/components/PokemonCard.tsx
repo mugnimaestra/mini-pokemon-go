@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
+import Link from "next/link";
 import { Maybe } from "../types";
 
 type PokemonCardProps = {
@@ -23,6 +24,7 @@ const PokemonCard: React.FC<PokemonCardProps> = ({
         id: Maybe<number>;
         name: Maybe<string>;
         owned: number;
+        nicknames: string[];
       }[] = JSON.parse(myPokemonList);
       const filterThisPokemon = parsedMyPokemonList.filter(
         (p) => p.id === id && p.name === name
@@ -34,7 +36,7 @@ const PokemonCard: React.FC<PokemonCardProps> = ({
   }, [id, name]);
 
   return (
-    <PokemonCardStyled className="flex justify-center items-center items-stretch">
+    <PokemonCardStyled className="flex justify-center items-center items-stretch relative">
       <div className="w-full lg:w-auto rounded overflow-hidden shadow-lg items-stretch">
         {img && <img className="w-full" src={img} alt={name ?? ""} />}
         <div className="px-6 py-4">
@@ -46,6 +48,11 @@ const PokemonCard: React.FC<PokemonCardProps> = ({
           </p>
         </div>
       </div>
+      {name && (
+        <Link href={`/pokemon/${name}`}>
+          <a className="overlay-navigation" />
+        </Link>
+      )}
     </PokemonCardStyled>
   );
 };
