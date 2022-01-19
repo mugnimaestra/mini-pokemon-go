@@ -82,16 +82,15 @@ const CardWrapper = () => {
           {<></>}
         </InView>
       </CardWrapperStyled>
-      {!loading && (
-        <div className="flex justify-center">
-          <button
-            onClick={() => handleLoadMore()}
-            className="hidden lg:block mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Load More
-          </button>
-        </div>
-      )}
+      <div className="flex justify-center">
+        <button
+          disabled={loading}
+          onClick={() => handleLoadMore()}
+          className="hidden lg:block mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex justify-center"
+        >
+          {loading ? "Loading..." : "Load more"}
+        </button>
+      </div>
     </>
   );
 };

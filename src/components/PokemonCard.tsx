@@ -19,12 +19,12 @@ const PokemonCard: React.FC<PokemonCardProps> = ({
   useEffect(() => {
     const myPokemonList: string | null =
       window.localStorage.getItem("myPokemonList");
-    if (!!myPokemonList) {
+    if (!!myPokemonList && typeof myPokemonList !== "undefined") {
       const parsedMyPokemonList: {
         id: Maybe<number>;
         name: Maybe<string>;
         nicknames: string[];
-      }[] = JSON.parse(myPokemonList);
+      }[] = JSON.parse(myPokemonList ?? "");
       const filterThisPokemon = parsedMyPokemonList.filter(
         (p) => p.id === id && p.name === name
       );
