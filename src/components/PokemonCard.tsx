@@ -23,14 +23,13 @@ const PokemonCard: React.FC<PokemonCardProps> = ({
       const parsedMyPokemonList: {
         id: Maybe<number>;
         name: Maybe<string>;
-        owned: number;
         nicknames: string[];
       }[] = JSON.parse(myPokemonList);
       const filterThisPokemon = parsedMyPokemonList.filter(
         (p) => p.id === id && p.name === name
       );
       if (filterThisPokemon.length > 0) {
-        setOwnedPokemon(filterThisPokemon[0].owned);
+        setOwnedPokemon(filterThisPokemon[0].nicknames.length);
       }
     }
   }, [id, name]);

@@ -41,6 +41,7 @@ export interface getPokemonDetail_pokemon_moves {
 export interface getPokemonDetail_pokemon {
   __typename: "Pokemon";
   id: number | null;
+  name: string | null;
   sprites: getPokemonDetail_pokemon_sprites | null;
   types: (getPokemonDetail_pokemon_types | null)[] | null;
   moves: (getPokemonDetail_pokemon_moves | null)[] | null;

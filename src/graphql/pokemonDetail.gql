@@ -1,6 +1,7 @@
 query getPokemonDetail($pokemonName: String!) {
   pokemon(name: $pokemonName) {
     id
+    name
     sprites {
       back_default
       front_default

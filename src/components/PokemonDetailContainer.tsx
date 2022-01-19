@@ -1,17 +1,35 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
 import styled from "@emotion/styled";
 import { useRouter } from "next/router";
+import Swal from "sweetalert2";
 import {
   getPokemonDetail,
   getPokemonDetailVariables,
 } from "../../src/graphql";
+import { Maybe } from "graphql/jsutils/Maybe";
 
 const POKEMON_DETAIL = require("../../src/graphql/pokemonDetail.gql");
 
 type PokemonDetailProps = {};
 
 const PokemonDetailContainer: React.FC<PokemonDetailProps> = () => {
+  const [thisPokemon, setPokemon] = useState<{
+    id: Maybe<number>;
+    name: Maybe<string>;
+    nicknames: Maybe<string[]>;
+  }>({
+    id: null,
+    name: null,
+    nicknames: [],
+  });
+  const [parsedPokemon, setParsedPokemon] = useState<
+    {
+      id: Maybe<number>;
+      name: Maybe<string>;
+      nicknames: Maybe<string[]>;
+    }[]
+  >();
   const router = useRouter();
   const pokemonName =
     typeof router?.query?.pokemonName === "string"
@@ -27,6 +45,13 @@ const PokemonDetailContainer: React.FC<PokemonDetailProps> = () => {
       pokemonName,
     },
     fetchPolicy: "no-cache",
+    onCompleted: (data) => {
+      setPokemon((prev) => ({
+        id: data.pokemon?.id,
+        name: data.pokemon?.name,
+        nicknames: prev?.nicknames,
+      }));
+    },
   });
 
   const mappedTypes = data?.pokemon?.types?.map(
@@ -36,6 +61,91 @@ const PokemonDetailContainer: React.FC<PokemonDetailProps> = () => {
   const mappedMoves = data?.pokemon?.moves?.map(
     (item) => item?.move?.name
   );
+
+  const handleCatchPokemon = useCallback(async () => {
+    if (Math.random() * 100 > 50) {
+      const { value: text } = await Swal.fire({
+        input: "text",
+        inputLabel: "Caught a pokemon! Please name it",
+        inputPlaceholder: "Gives your pokemon nickname, eg: Rajiv",
+        inputAttributes: {
+          "aria-label": "Gives your pokemon nickname, eg: Rajiv",
+        },
+        showCancelButton: true,
+        inputValidator: (value) => {
+          if (!value) {
+            return "You need to give nickname to the pokemon!";
+          }
+          if (
+            thisPokemon.nicknames?.some(
+              (nickname) => nickname === value
+            )
+          ) {
+            return "The nickname already used for this pokemon";
+          }
+          return null;
+        },
+      });
+
+      if (text) {
+        const newParsedPokemonList = parsedPokemon?.map((pokemon) => {
+          if (pokemon.name === thisPokemon.name) {
+            return {
+              id: pokemon.id,
+              name: pokemon.name,
+              nicknames: [...(pokemon.nicknames ?? []), text],
+            };
+          }
+          return pokemon;
+        });
+        // console.log('asd', parsedPokemon);
+        setParsedPokemon(newParsedPokemonList);
+        setPokemon((prev) => ({
+          ...prev,
+          nicknames: [...(prev?.nicknames ?? []), text],
+        }));
+        window.localStorage.setItem(
+          "myPokemonList",
+          JSON.stringify(newParsedPokemonList)
+        );
+        Swal.fire({
+          title: "Success",
+          text: `Your pokemon name is ${text}`,
+          icon: "success",
+          confirmButtonText: "Cool",
+        });
+      }
+    } else {
+      Swal.fire({
+        title: "Failed",
+        text: "Failed to catch pokemon",
+        icon: "error",
+        confirmButtonText: "Okay",
+      });
+    }
+  }, [parsedPokemon, thisPokemon]);
+
+  useEffect(() => {
+    const myPokemonList: string | null =
+      window.localStorage.getItem("myPokemonList");
+    if (!!myPokemonList) {
+      const parsedMyPokemonList: {
+        id: Maybe<number>;
+        name: Maybe<string>;
+        nicknames: string[];
+      }[] = JSON.parse(myPokemonList);
+      setParsedPokemon(parsedMyPokemonList);
+      const filterThisPokemon = parsedMyPokemonList.filter(
+        (p) => p.name === name
+      );
+      if (filterThisPokemon.length > 0) {
+        setPokemon((prev) => ({
+          ...prev,
+          nicknames: filterThisPokemon[0].nicknames,
+        }));
+      }
+    }
+  }, []);
 
   if (loading) return <></>;
 
@@ -66,8 +176,11 @@ const PokemonDetailContainer: React.FC<PokemonDetailProps> = () => {
             <p className="text-grey-darker text-xl">All the Moves:</p>
             <ul>
               {mappedMoves?.map((move, idx) => (
-                <li className="text-grey-darker text-base" key={idx}>
-                  {move}
+                <li
+                  className="text-grey-darker text-base capitalize"
+                  key={idx}
+                >
+                  {move?.split("-").join(" ")}
                 </li>
               ))}
             </ul>
@@ -75,7 +188,10 @@ const PokemonDetailContainer: React.FC<PokemonDetailProps> = () => {
         </div>
       </PokemonDetailContainerStyled>
       <div className="flex justify-center">
-        <button className=" mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <button
+          onClick={() => handleCatchPokemon()}
+          className=" mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
           Catch the Pokemon
         </button>
       </div>
