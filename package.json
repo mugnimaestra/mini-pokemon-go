@@ -11,6 +11,7 @@
     "tsc:check": "tsc -p tsconfig.json --noEmit",
     "lint:fix": "npm run tsc:check && eslint . --ext .js,.jsx,.ts,.tsx ./ --fix",
     "prettier:fix": "pretty-quick --staged",
+    "apollo:generate": "npx apollo client:codegen ./src/graphql/index.ts --target=typescript --outputFlat",
     "prepare": "husky install"
   },
   "keywords": [
@@ -26,10 +27,13 @@
     ]
   },
   "dependencies": {
+    "@apollo/client": "^3.5.7",
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
     "dotenv": "^14.2.0",
     "express": "^4.17.2",
+    "graphql": "^16.2.0",
+    "graphql-tag": "^2.12.6",
     "next": "^12.0.8",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
