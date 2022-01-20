@@ -148,7 +148,7 @@ const PokemonDetailContainer: React.FC<PokemonDetailProps> = () => {
       } else {
         Swal.fire({
           title: "Failed",
-          text: "Failed to catch pokemon",
+          text: "Your pokeball failed to catch the pokemon",
           icon: "error",
           confirmButtonText: "Okay",
         });

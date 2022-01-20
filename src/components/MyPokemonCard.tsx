@@ -8,6 +8,16 @@ type MyPokemonCardProps = {
   name: Maybe<string>;
   nicknames: Maybe<string[]>;
   images: Maybe<string[]>;
+  setParsedPokemon: React.Dispatch<
+    React.SetStateAction<
+      {
+        id: Maybe<number>;
+        name: Maybe<string>;
+        nicknames: Maybe<string[]>;
+        images: Maybe<string[]>;
+      }[]
+    >
+  >;
 };
 
 const MyPokemonCard: React.FC<MyPokemonCardProps> = ({
@@ -15,6 +25,7 @@ const MyPokemonCard: React.FC<MyPokemonCardProps> = ({
   name,
   nicknames,
   images,
+  setParsedPokemon,
 }) => {
   const handleRemovePokemon = (nicknameParam: Maybe<string>) => {
     Swal.fire({
@@ -29,16 +40,47 @@ const MyPokemonCard: React.FC<MyPokemonCardProps> = ({
         if (typeof myPokemonList === "string") {
           const parsedMyPokemonList: MyPokemonCardProps[] =
             JSON.parse(myPokemonList);
-          //   const newParsedMyPokemonList = parsedMyPokemonList.map(pokemon => {
-          //     const newNicknames = [...(pokemon?.nicknames ?? [])];
-          //     return pokemon;
-          //   })
+          const newParsedMyPokemonList = parsedMyPokemonList.map(
+            (pokemon) => {
+              if (pokemon.name === name) {
+                let newNicknames = [...(pokemon?.nicknames ?? [])];
+                newNicknames = newNicknames.filter(
+                  (nickname) => nickname !== nicknameParam
+                );
+                return {
+                  pokemonId: pokemon.pokemonId,
+                  name: pokemon.name,
+                  images: pokemon.images,
+                  nicknames: newNicknames,
+                };
+              }
+              return pokemon;
+            }
+          );
+          const removeEmptyNicknameMyPokemonList =
+            newParsedMyPokemonList.filter(
+              (pokemon) => (pokemon?.nicknames ?? []).length > 0
+            );
+          window.localStorage.setItem(
+            "myPokemonList",
+            JSON.stringify(removeEmptyNicknameMyPokemonList)
+          );
+          const newStateParsedMyPokemonList =
+            removeEmptyNicknameMyPokemonList.map((pokemon) => {
+              return {
+                id: pokemon.pokemonId,
+                name: pokemon.name,
+                nicknames: pokemon.nicknames,
+                images: pokemon.images,
+              };
+            });
+          setParsedPokemon(newStateParsedMyPokemonList);
+          Swal.fire(
+            `You release ${nicknameParam} to the wild`,
+            "",
+            "success"
+          );
         }
-        Swal.fire(
-          `You release ${nicknameParam} to the wild`,
-          "",
-          "success"
-        );
       }
     });
   };
@@ -48,15 +90,23 @@ const MyPokemonCard: React.FC<MyPokemonCardProps> = ({
       <div className="border-zinc-500 border-4 p-2 w-full lg:w-auto rounded overflow-hidden shadow-lg items-stretch">
         <h1 className="text-2xl text-center capitalize">{name}</h1>
         {(images?.length ?? []) > 0 &&
-          images?.map((img) => (
-            <img className="w-full" src={img} alt={name ?? ""} />
+          images?.map((img, idx) => (
+            <img
+              key={idx}
+              className="w-full"
+              src={img}
+              alt={name ?? ""}
+            />
           ))}
         <div className="px-6 py-4">
           <div className="font-bold text-xl mb-8">
             List of your owned nickname pokemon:
           </div>
-          {nicknames?.map((nickname) => (
-            <li className="text-lg flex justify-between align-center mb-6">
+          {nicknames?.map((nickname, idx) => (
+            <li
+              key={idx}
+              className="text-lg flex justify-between align-center mb-6"
+            >
               <span className="self-center">{nickname}</span>
               <button
                 onClick={() => handleRemovePokemon(nickname)}

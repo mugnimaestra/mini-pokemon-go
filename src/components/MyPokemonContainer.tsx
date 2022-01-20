@@ -31,10 +31,12 @@ const MyPokemonContainer: React.FC = () => {
     <MyPokemonContainerStyled className="flex flex-wrap gap-3 relative">
       {parsedPokemon.map((pokemon) => (
         <MyPokemonCard
+          key={pokemon.id}
           pokemonId={pokemon.id}
           name={pokemon.name}
           nicknames={pokemon.nicknames}
           images={pokemon.images}
+          setParsedPokemon={(e) => setParsedPokemon(e)}
         />
       ))}
     </MyPokemonContainerStyled>
