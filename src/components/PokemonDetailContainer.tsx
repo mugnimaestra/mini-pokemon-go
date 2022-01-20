@@ -18,16 +18,19 @@ const PokemonDetailContainer: React.FC<PokemonDetailProps> = () => {
     id: Maybe<number>;
     name: Maybe<string>;
     nicknames: Maybe<string[]>;
+    images: Maybe<string[]>;
   }>({
     id: null,
     name: null,
     nicknames: [],
+    images: [],
   });
   const [parsedPokemon, setParsedPokemon] = useState<
     {
       id: Maybe<number>;
       name: Maybe<string>;
       nicknames: Maybe<string[]>;
+      images: Maybe<string[]>;
     }[]
   >([]);
   const router = useRouter();
@@ -47,6 +50,10 @@ const PokemonDetailContainer: React.FC<PokemonDetailProps> = () => {
         id: data.pokemon?.id,
         name: data.pokemon?.name,
         nicknames: prev?.nicknames,
+        images: [
+          data.pokemon?.sprites?.front_default ?? "",
+          data.pokemon?.sprites?.back_default ?? "",
+        ],
       }));
     },
   });
@@ -106,6 +113,7 @@ const PokemonDetailContainer: React.FC<PokemonDetailProps> = () => {
                   id: pokemon.id,
                   name: pokemon.name,
                   nicknames: [...(pokemon.nicknames ?? []), text],
+                  images: pokemon.images,
                 };
               }
               return pokemon;
@@ -116,6 +124,7 @@ const PokemonDetailContainer: React.FC<PokemonDetailProps> = () => {
               id: thisPokemon.id,
               name: thisPokemon.name,
               nicknames: [text],
+              images: thisPokemon.images,
             });
           }
 
@@ -156,6 +165,7 @@ const PokemonDetailContainer: React.FC<PokemonDetailProps> = () => {
         id: Maybe<number>;
         name: Maybe<string>;
         nicknames: string[];
+        images: string[];
       }[] = JSON.parse(myPokemonList ?? "");
       setParsedPokemon(parsedMyPokemonList);
       const filterThisPokemon = parsedMyPokemonList.filter(
@@ -233,6 +243,16 @@ const PokemonDetailContainer: React.FC<PokemonDetailProps> = () => {
   );
 };
 
-const PokemonDetailContainerStyled = styled.div``;
+const PokemonDetailContainerStyled = styled.div`
+  width: 100%;
+
+  @media screen and (min-width: 768px) {
+    width: calc(50% - 12px);
+  }
+
+  @media screen and (min-width: 991px) {
+    width: auto;
+  }
+`;
 
 export default PokemonDetailContainer;
