@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useLazyQuery, useQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import styled from "@emotion/styled";
 import { useRouter } from "next/router";
 import Swal from "sweetalert2";
@@ -188,6 +188,7 @@ const PokemonDetailContainer: React.FC<PokemonDetailProps> = () => {
         },
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pokemonName]);
 
   if (loading) return <></>;

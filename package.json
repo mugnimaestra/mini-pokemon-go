@@ -4,9 +4,9 @@
   "description": "A simple pokemon app made by nextjs",
   "main": "index.js",
   "scripts": {
-    "dev": "node src/server.js",
+    "dev": "next",
     "build": "next build",
-    "start": "NODE_ENV=production node src/server.js",
+    "start": "next start",
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc:check": "tsc -p tsconfig.json --noEmit",
     "lint:fix": "npm run tsc:check && eslint . --ext .js,.jsx,.ts,.tsx ./ --fix",
